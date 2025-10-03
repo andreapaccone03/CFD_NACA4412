@@ -36,7 +36,7 @@ Aim: visualize pressure distribution and flow features around the airfoil.
 
 ---
 
-## 📝 Remarks
+## Remarks
 This case demonstrates the full workflow of a **basic CFD simulation in OpenFOAM**:
 1. Mesh generation around an external aerodynamics geometry (airfoil).  
 2. RANS k-ω SST simulation with `simpleFoam`.  
