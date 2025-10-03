@@ -1,0 +1,123 @@
+FoamFile { version 2.0; format ascii; class dictionary; object snappyHexMeshDict; }
+
+// SOLO FASE 1 (castellated): taglio + refinement confinato, niente snap/layers
+castellatedMesh true;
+snap            true;
+addLayers       false;
+
+geometry
+{
+    // STL dell’ala già traslato in z ∈ [0, 0.01]
+    airfoil
+    {
+        type triSurfaceMesh;
+        file "naca4412_shift.stl";   // relativo a constant/triSurface
+        name airfoil;                // patch risultante (wall)
+    }
+
+    // Box attorno al profilo (confinamento del refinement vicino all’ala)
+    aroundFoil
+    {
+        type searchableBox;
+        min (-0.5 -0.30 0.0);
+        max ( 1.2  0.30 0.01);
+    }
+
+    // Piccolo box di scia dietro il TE
+    wakeBox
+    {
+        type searchableBox;
+        min ( 1.0 -0.25 0.0);
+        max ( 6.0  0.25 0.01);
+    }
+}
+
+castellatedMeshControls
+{
+    // Limiti duri per non creare troppe celle
+    maxLocalCells        250000;
+    maxGlobalCells       300000;
+    minRefinementCells   0;
+    nCellsBetweenLevels  1;
+    allowFreeStandingZoneFaces true;
+
+    // OF8 vuole la chiave anche se vuota
+    features ();
+
+    // Livelli più leggeri vicino alla superficie
+    refinementSurfaces
+    {
+        airfoil
+        {
+            level (4 5);
+            patchInfo { type wall; }
+        }
+    }
+
+    // Confinamento del refinement (intorno al profilo e nella scia)
+    refinementRegions
+    {
+        aroundFoil
+        {
+            mode inside;
+            levels ((1E15 5));   // fino a livello 5 DENTRO il box
+        }
+        wakeBox
+        {
+            mode inside;
+            levels ((1E15 3));   // scia più leggera
+        }
+    }
+
+    resolveFeatureAngle 60;
+    locationInMesh (-2 0 0.005);   // punto sicuramente nel fluido
+}
+
+// Anche se OFF, OF8 vuole alcune chiavi in addLayersControls
+addLayersControls
+{
+    relativeSizes true;
+    layers {};
+    expansionRatio 1.2;
+    finalLayerThickness 0.3;
+    minThickness 0.1;
+    nGrow 0;
+    featureAngle 60;
+    slipFeatureAngle 30;
+    nRelaxIter 5;
+    nSmoothSurfaceNormals 1;
+    nSmoothNormals 3;
+    nSmoothThickness 10;
+    maxFaceThicknessRatio 0.5;
+    maxThicknessToMedialRatio 0.3;
+    minMedianAxisAngle 90;
+    nBufferCellsNoExtrude 0;
+    nLayerIter 0;
+}
+
+// Lo legge comunque anche se snap=false
+snapControls
+{
+    nSmoothPatch 5;
+    tolerance    2.0;
+    nSolveIter   30;
+    nRelaxIter   5;
+}
+
+meshQualityControls
+{
+    maxNonOrtho         65;
+    maxBoundarySkewness 4;
+    maxInternalSkewness 4;
+    maxConcave          80;
+    minVol              1e-13;
+    minTetQuality       1e-9;
+    minDeterminant      0.001;
+    minFaceWeight       0.02;
+    minVolRatio         0.01;
+    nSmoothScale        4;
+    errorReduction      0.75;
+}
+
+debug          0;
+mergeTolerance 1e-6;
