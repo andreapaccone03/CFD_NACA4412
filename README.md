@@ -1,12 +1,12 @@
 # CFD Simulation – NACA4412 Airfoil
 
-## 🎯 Objective
+## Objective
 Steady incompressible RANS simulation of the NACA4412 airfoil using **OpenFOAM** for solving and **ParaView** for post-processing.  
 Aim: visualize pressure distribution and flow features around the airfoil.
 
 ---
 
-## ⚙️ Setup
+## Setup
 - **Solver:** `simpleFoam` (steady RANS, incompressible)  
 - **Turbulence model:** k-ω SST  
 - **Reynolds number:** ~5×10⁵ (U∞ ≈ 15 m/s, c = 1 m, ν = 1.5e-5 m²/s)  
@@ -19,7 +19,7 @@ Aim: visualize pressure distribution and flow features around the airfoil.
 
 ---
 
-## 📊 Results
+## Results
 
 ### Pressure distribution (slice)
 ![Pressure Slice](results/figures/pressure_slice.png)
